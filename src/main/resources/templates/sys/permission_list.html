@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <div th:replace="base/common :: commonHeader('菜单')"></div>
+</head>
+<body class="sticky-header">
+<section>
+    <!-- sidebar left start-->
+    <div th:replace="base/common :: sidebarLeft"></div>
+    <!-- sidebar left end-->
+
+    <!-- body content start-->
+    <div class="body-content" style="min-height: 1000px;">
+        <!-- header section start-->
+        <div th:replace="base/common :: headerSection"></div>
+        <!-- header section end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-sm-12">
+                    <section class="panel">
+                        <!--<form  th:action="@{'/user/findUserByCondition'}">
+                            <input name="username" class="form-control" id="H_user" type="text"
+                                   placeholder="请输入用户名..." />
+                            <input type="submit" value="查询" />
+                        </form>-->
+                        <header class="panel-heading ">
+                            菜单列表
+                            <span class="tools pull-right">
+                                <a class="btn btn-success" data-toggle="modal" data-target="#myModal" href="#myModal">新增</a>
+                            </span>
+                        </header>
+                        <table class="table data-table" style="margin-left: 10px;">
+                        <!--<table class="table colvis-data-table data-table">-->
+                            <thead>
+                            <tr>
+                                <!--<th>序号</th>-->
+                                <th>名称</th>
+                                <th>链接</th>
+                                <th>类型</th>
+                                <th>权限</th>
+                                <th>排序</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr id="tbodyDiv" th:each="var:${datas.content}">
+                                <!--<td class="center-block" style="vertical-align: middle">
+                                    <label><input type="checkbox" name="ids" th:value="${var.menuId}"/></label>
+                                </td>-->
+                                <td th:text="${var.name}"></td>
+                                <td th:text="${var.url}"></td>
+                                <td th:text="${var.resourceType}"></td>
+                                <td th:text="${var.permission}"></td>
+                                <td th:text="${var.orderNum}"></td>
+                                <td>
+                                    <a data-toggle="modal" href="#myModal" th:onclick="toEdit([[${var.id}]])" >编辑</a>
+                                    <a href="#" th:onclick="del([[${var.id}]])" >删除</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="pagination pagination-sm pull-right">
+                            <div id="page" url="/syspermission/list" ></div>
+                            <div th:include="base/page :: pager" th:remove="tag"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">权限编辑</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <input type="hidden" id="id">
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">上级：</label>
+                                    <div class="col-md-8">
+                                        <select class="form-control" id="parentId" name="parentId">
+                                            <option value="0">顶级</option>
+                                            <option th:each="permission,userStat:${permissionList}" th:value="${permission.id}" th:text="${permission.name}"></option>
+                                        </select>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">名称：</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="name" name="name" minlength="2" type="text"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">链接:</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control " id="url" type="url" name="url" />
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">类型：</label>
+                                    <div class="col-md-8">
+                                        <select class="form-control" id="resourceType" name="resourceType">
+                                            <option value="menu">菜单</option>
+                                            <option value="button">按钮</option>
+                                        </select>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">权限:</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="permission" name="permission" minlength="1" type="text" required />
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">排序:</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="orderNum" name="orderNum" minlength="1" type="number" min="0" step="1"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-success" type="submit" id="saveBtn">保存</button>
+                            <button data-dismiss="modal" class="btn btn-default" type="button" id="cancelBtn">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal -->
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        <div th:replace="base/common :: commonFooter"></div>
+        <!--footer section end-->
+    </div>
+    <!-- body content end-->
+</section>
+
+<script th:inline="javascript">
+
+    $("#saveBtn").click(function () {
+
+        if ($("#parentId").val()==null || $("#parentId").val()==""){
+            alert("请选择上级菜单")
+            return;
+        }
+        if ($("#name").val()==null || $("#name").val()==""){
+            alert("名称不能为空")
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            dataType: "json",
+            url: "/syspermission/edit",
+            data: {
+                "id": $("#id").val(),
+                "parentId": $("#parentId").val(),
+                "name": $("#name").val(),
+                "url": $("#url").val(),
+                "resourceType": $("#resourceType").val(),
+                "permission": $("#permission").val(),
+                "orderNum": $("#orderNum").val()
+            },
+            success: function (res) {
+                if (res.code==0){
+                    alert(res.msg);
+                } else{
+                    $("#cancelBtn").click();
+                    window.location.reload();
+                }
+            }, error: function (res) {
+                console.log("error" + res.toString());
+            }
+        })
+    })
+
+    function toEdit(id) {
+        console.log(id);
+        $("#id").val(id);
+        $.ajax({
+            type:'POST',
+            dataType:"json",
+            url:"/syspermission/toEdit",
+            data:{
+                id:id
+            },
+            success:function (res) {
+                $("#parentId").val(res.bean.parentId);
+                $("#name").val(res.bean.name);
+                $("#url").val(res.bean.url);
+                $("#resourceType").val(res.bean.resourceType);
+                $("#permission").val(res.bean.permission);
+                $("#orderNum").val(res.bean.orderNum);
+            },
+            error:function (res) {
+                console.log(res.toString());
+            }
+        })
+    }
+
+    function del(id) {
+
+        if(confirm("确实要删除吗？")){
+            $.ajax({
+                type:'POST',
+                dataType:"json",
+                url:"/syspermission/deleteById",
+                data:{
+                    id:id
+                },
+                success:function (res) {
+                    alert(res.msg)
+                    window.location.reload();
+                },
+                error:function (res) {
+                    console.log(res.toString());
+                }
+            })
+        }
+
+
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <div th:replace="base/common :: commonHeader('角色')"></div>
+</head>
+<body class="sticky-header">
+<section>
+    <!-- sidebar left start-->
+    <div th:replace="base/common :: sidebarLeft"></div>
+    <!-- sidebar left end-->
+
+    <!-- body content start-->
+    <div class="body-content" style="min-height: 1000px;">
+        <!-- header section start-->
+        <div th:replace="base/common :: headerSection"></div>
+        <!-- header section end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-sm-12">
+                    <section class="panel">
+
+                        <header class="panel-heading ">
+                            角色列表
+                            <span class="tools pull-right">
+                                <a class="btn btn-success m-b-10" data-toggle="modal" href="#myModal" th:onclick="toAdd()">新增</a>
+                            </span>
+                        </header>
+                        <form class="form-inline" style="margin-top: 10px;margin-left: 10px" th:action="@{'/sysrole/list'}">
+                            <div class="form-group">
+                                <label class="sr-only" for="inputName">Email address</label>
+                                <input type="text" class="form-control" id="inputName" name="nameParam" th:value="${nameParam}" placeholder="请输入名称...">
+                            </div>
+                            <input type="submit" class="btn btn-round btn-success" value="查询" />
+                        </form>
+                        <table class="table data-table" style="margin-left: 10px;">
+                        <!--<table class="table colvis-data-table data-table">-->
+                            <thead>
+                            <tr>
+                                <!--<th>序号</th>-->
+                                <th>名称</th>
+                                <th>描述</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr id="tbodyDiv" th:each="var:${datas.content}">
+                                <!--<td class="center-block" style="vertical-align: middle">
+                                    <label><input type="checkbox" name="ids" th:value="${var.menuId}"/></label>
+                                </td>-->
+                                <td th:text="${var.role}"></td>
+                                <td th:text="${var.description}"></td>
+                                <td th:text="${#dates.format(var.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                <td>
+                                    <a data-toggle="modal" href="#myModal" th:onclick="toEdit([[${var.id}]])" >编辑</a>
+                                    <a href="#" th:onclick="del([[${var.id}]])" >删除</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="pagination pagination-sm pull-right">
+                            <div id="page" url="/sysrole/list" ></div>
+                            <div th:include="base/page :: pager" th:remove="tag"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">用户编辑</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <input type="hidden" id="id">
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">角色：</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="role" name="role" minlength="2" type="text"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">描述：</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="description" name="description" minlength="2" type="text"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">权限设置：</label>
+                                    <div class="col-md-8">
+                                        <div>
+                                            <input type="checkbox" class="iCheck-flat-orange" id="checkAll" value="all">
+                                            <label class="control-label">全选</label>
+                                        </div>
+                                        <div th:each="permission:${permissionList}">
+                                            <input name="optionName" type="checkbox" class="iCheck-flat-orange" th:value="${permission.id}" th:id="${permission.id}">
+                                            <label class="control-label" th:text="${permission.name}"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-success" type="submit" id="saveBtn">保存</button>
+                            <button data-dismiss="modal" class="btn btn-default" type="button" id="cancelBtn">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal -->
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        <div th:replace="base/common :: commonFooter"></div>
+        <!--footer section end-->
+    </div>
+    <!-- body content end-->
+</section>
+
+<script th:inline="javascript">
+
+    $("#saveBtn").click(function () {
+        if ($("#role").val()==null || $("#role").val()==""){
+            alert("角色不能为空")
+            return;
+        }
+        //获取选中权限
+        var checkBoxArr = [];
+        $('input[name="optionName"]:checked').each(function() {
+            checkBoxArr.push($(this).val());
+        });
+        $.ajax({
+            type: 'POST',
+            dataType: "json",
+            url: "/sysrole/edit",
+            data: {
+                "id": $("#id").val(),
+                "role": $("#role").val(),
+                "description": $("#description").val(),
+                "permissionString":JSON.stringify(checkBoxArr)
+            },
+            success: function (res) {
+                if (res.code==0){
+                    alert(res.msg);
+                } else{
+                    $("#cancelBtn").click();
+                    window.location.reload();
+                }
+            }, error: function (res) {
+                console.log("error" + res.toString());
+            }
+        })
+    })
+
+    function toAdd() {
+        $("#id").val("");
+        $("#role").val("");
+        $("#description").val("");
+    }
+
+    function toEdit(id) {
+        console.log(id);
+        $("#userId").val(id);
+        $.ajax({
+            type:'POST',
+            dataType:"json",
+            url:"/sysrole/toEdit",
+            data:{
+                id:id
+            },
+            success:function (res) {
+                $("#id").val(res.bean.id);
+                $("#role").val(res.bean.role);
+                $("#description").val(res.bean.description);
+                var permissions = res.permissions;
+                var permissionList = [[${permissionList}]];
+
+                //取消全选
+                $("input[name='optionName']").iCheck("uncheck");
+                //找选中的权限
+                var newArray = [];
+                for (var i=0;i<permissionList.length;i++){
+                    for (var j=0;j<permissions.length;j++){
+                        if (permissions[j].id==permissionList[i].id){
+                            newArray.push(permissionList[i]);
+                        }
+                    }
+                }
+                //初始化选中
+                for (var i=0;i<newArray.length;i++){
+                    $("#"+newArray[i].id).iCheck("check");
+                }
+            },
+            error:function (res) {
+                console.log(res.toString());
+            }
+        })
+    }
+
+    function del(id) {
+
+        if(confirm("确实要删除吗？")){
+            $.ajax({
+                type:'POST',
+                dataType:"json",
+                url:"/sysrole/deleteById",
+                data:{
+                    id:id
+                },
+                success:function (res) {
+                    alert(res.msg)
+                    window.location.reload();
+                },
+                error:function (res) {
+                    console.log(res.toString());
+                }
+            })
+        }
+    }
+
+    //实现全选反选
+/*    $("#checkAll").on('click', function() {
+        $("input[name='optionName']").prop("checked", $(this).prop('checked'));
+    })
+    $("input[name='optionName']").on('click', function() {
+        //当选中的长度等于checkbox的长度的时候,就让控制全选反选的checkbox设置为选中,否则就为未选中
+        if($("input[name='optionName']").length === $("input[name='optionName']").length) {
+            $("#checkAll").prop("checked", true);
+        } else {
+            $("#checkAll").prop("checked", false);
+        }
+    })*/
+
+    $('#checkAll').on('ifChecked', function(event){
+        $("input[name='optionName']").iCheck("check");
+    });
+    $('#checkAll').on('ifUnchecked', function(event){
+        $("input[name='optionName']").iCheck("uncheck");
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <div th:replace="base/common :: commonHeader('主页')"></div>
+</head>
+
+<body class="sticky-header">
+
+<section>
+    <!-- sidebar left start-->
+    <div th:replace="base/common :: sidebarLeft"></div>
+    <!-- sidebar left end-->
+
+    <!-- body content start-->
+    <div class="body-content" style="min-height: 1200px;">
+
+        <!-- header section start-->
+        <div th:replace="base/common :: headerSection"></div>
+        <!-- header section end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+           我是首页
+
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        <div th:replace="base/common :: commonFooter"></div>
+        <!--footer section end-->
+    </div>
+    <!-- body content end-->
+</section>
+
+</body>
+</html>

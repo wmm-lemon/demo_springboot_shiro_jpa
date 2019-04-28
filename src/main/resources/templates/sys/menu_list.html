@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <div th:replace="base/common :: commonHeader('菜单')"></div>
+</head>
+<body class="sticky-header">
+<section>
+    <!-- sidebar left start-->
+    <div th:replace="base/common :: sidebarLeft"></div>
+    <!-- sidebar left end-->
+
+    <!-- body content start-->
+    <div class="body-content" style="min-height: 1000px;">
+        <!-- header section start-->
+        <div th:replace="base/common :: headerSection"></div>
+        <!-- header section end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-sm-12">
+                    <section class="panel">
+                        <!--<form  th:action="@{'/user/findUserByCondition'}">
+                            <input name="username" class="form-control" id="H_user" type="text"
+                                   placeholder="请输入用户名..." />
+                            <input type="submit" value="查询" />
+                        </form>-->
+                        <header class="panel-heading ">
+                            菜单列表
+                            <span class="tools pull-right">
+                                <a class="btn btn-success" data-toggle="modal" data-target="#myModal" href="#myModal">新增</a>
+                            </span>
+                        </header>
+                        <table class="table data-table" style="margin-left: 10px;">
+                        <!--<table class="table colvis-data-table data-table">-->
+                            <thead>
+                            <tr>
+                                <!--<th>序号</th>-->
+                                <th>菜单名称</th>
+                                <th>菜单链接</th>
+                                <th>上级菜单</th>
+                                <th>菜单排序</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr id="tbodyDiv" th:each="var:${datas.content}">
+                                <!--<td class="center-block" style="vertical-align: middle">
+                                    <label><input type="checkbox" name="ids" th:value="${var.menuId}"/></label>
+                                </td>-->
+                                <td th:text="${var.menuName}"></td>
+                                <td th:text="${var.menuUrl}"></td>
+                                <td th:text="${var.parentId}"></td>
+                                <td th:text="${var.menuOrder}"></td>
+                                <td>
+                                    <a data-toggle="modal" href="#myModal" th:onclick="toEdit([[${var.menuId}]])" >编辑</a>
+                                    <a href="#" th:onclick="del([[${var.menuId}]])" >删除</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="pagination pagination-sm pull-right">
+                            <div id="page" url="/sysmenu/findMenuList" ></div>
+                            <div th:include="base/page :: pager" th:remove="tag"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">菜单编辑</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <input type="hidden" id="menuId">
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">上级菜单：</label>
+                                    <div class="col-md-8">
+                                        <select class="form-control" id="parentId" name="parentId">
+                                            <option value="0">顶级</option>
+                                            <option th:each="menu,userStat:${menuList}" th:value="${menu.menuId}" th:text="${menu.menuName}"></option>
+                                        </select>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">菜单名称：</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="menuName" name="menuName" minlength="2" type="text"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">菜单URL:</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control " id="menuUrl" type="url" name="menuUrl" />
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">菜单排序:</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="menuOrder" name="menuOrder" minlength="1" type="text" required />
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-success" type="submit" id="saveBtn">保存</button>
+                            <button data-dismiss="modal" class="btn btn-default" type="button" id="cancelBtn">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal -->
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        <div th:replace="base/common :: commonFooter"></div>
+        <!--footer section end-->
+    </div>
+    <!-- body content end-->
+</section>
+
+<script th:inline="javascript">
+
+    $("#saveBtn").click(function () {
+
+        console.log("parentId====="+$("#parentId").val());
+        console.log("menuId====="+$("#menuId").val());
+
+        if ($("#parentId").val()==null || $("#parentId").val()==""){
+            alert("请选择上级菜单")
+            return;
+        }
+        if ($("#menuName").val()==null || $("#menuName").val()==""){
+            alert("菜单名称不能为空")
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            dataType: "json",
+            url: "/sysmenu/editMenu",
+            data: {
+                "menuId": $("#menuId").val(),
+                "parentId": $("#parentId").val(),
+                "menuName": $("#menuName").val(),
+                "menuUrl": $("#menuUrl").val(),
+                "menuOrder": $("#menuOrder").val()
+            },
+            success: function (res) {
+                if (res.code==0){
+                    alert(res.msg);
+                } else{
+                    $("#cancelBtn").click();
+                    window.location.reload();
+                }
+            }, error: function (res) {
+                console.log("error" + res.toString());
+            }
+        })
+    })
+
+    function toEdit(id) {
+        console.log(id);
+        $("#menuId").val(id);
+        $.ajax({
+            type:'POST',
+            dataType:"json",
+            url:"/sysmenu/findMenuById",
+            data:{
+                menuId:id
+            },
+            success:function (res) {
+                $("#parentId").val(res.menu.parentId);
+                $("#menuName").val(res.menu.menuName);
+                $("#menuUrl").val(res.menu.menuUrl);
+                $("#menuOrder").val(res.menu.menuOrder);
+            },
+            error:function (res) {
+                console.log(res.toString());
+            }
+        })
+    }
+
+    function del(id) {
+
+        if(confirm("确实要删除吗？")){
+            $.ajax({
+                type:'POST',
+                dataType:"json",
+                url:"/sysmenu/deleteMenuById",
+                data:{
+                    menuId:id
+                },
+                success:function (res) {
+                    alert(res.msg)
+                    window.location.reload();
+                },
+                error:function (res) {
+                    console.log(res.toString());
+                }
+            })
+        }
+
+
+    }
+
+</script>
+
+</body>
+</html>

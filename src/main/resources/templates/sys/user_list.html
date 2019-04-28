@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <div th:replace="base/common :: commonHeader('用户')"></div>
+</head>
+<body class="sticky-header">
+<section>
+    <!-- sidebar left start-->
+    <div th:replace="base/common :: sidebarLeft"></div>
+    <!-- sidebar left end-->
+
+    <!-- body content start-->
+    <div class="body-content" style="min-height: 1000px;">
+        <!-- header section start-->
+        <div th:replace="base/common :: headerSection"></div>
+        <!-- header section end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-sm-12">
+                    <section class="panel">
+
+                        <header class="panel-heading ">
+                            用户列表
+                            <span class="tools pull-right">
+                                <a class="btn btn-success m-b-10" data-toggle="modal" href="#myModal" th:onclick="toAdd()">新增</a>
+                            </span>
+                        </header>
+                        <form class="form-inline" style="margin-top: 10px;margin-left: 10px" th:action="@{'/sysuser/list'}">
+                            <div class="form-group">
+                                <label class="sr-only" for="inputName">Email address</label>
+                                <input type="text" class="form-control" id="inputName" name="nameParam" th:value="${nameParam}" placeholder="请输入名称...">
+                            </div>
+                            <input type="submit" class="btn btn-round btn-success" value="查询" />
+                        </form>
+                        <table class="table data-table" style="margin-left: 10px;">
+                        <!--<table class="table colvis-data-table data-table">-->
+                            <thead>
+                            <tr>
+                                <!--<th>序号</th>-->
+                                <th>用户名</th>
+                                <th>昵称</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr id="tbodyDiv" th:each="var:${datas.content}">
+                                <!--<td class="center-block" style="vertical-align: middle">
+                                    <label><input type="checkbox" name="ids" th:value="${var.menuId}"/></label>
+                                </td>-->
+                                <td th:text="${var.username}"></td>
+                                <td th:text="${var.nickName}"></td>
+                                <td th:text="${#dates.format(var.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                <td>
+                                    <a data-toggle="modal" href="#myModal" th:onclick="toEdit([[${var.userId}]])" >编辑</a>
+                                    <a href="#" th:onclick="del([[${var.userId}]])" >删除</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="pagination pagination-sm pull-right">
+                            <div id="page" url="/sysuser/list" ></div>
+                            <div th:include="base/page :: pager" th:remove="tag"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">用户编辑</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <input type="hidden" id="userId">
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">用户名：</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="username" name="username" minlength="2" type="text"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">昵称：</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="nick" name="nickName" minlength="2" type="text"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="control-label col-md-4">密码：</label>
+                                    <div class="col-md-8">
+                                        <input class=" form-control" id="password" name="password" minlength="2" type="password"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">角色：</label>
+                                    <div class="col-md-8">
+                                        <select id="multiple" class="form-control select2-multiple" multiple>
+                                            <option th:each="role,roleStat:${roleList}" th:value="${role.id}" th:text="${role.role}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!--<div class="form-group">
+                                    <label class="col-md-4 control-label">是否工厂人员：</label>
+                                    <div class="col-md-8">
+                                            <input type="radio" id="iCheckTrue" name="iCheck" class="iCheck-flat-orange" th:value="true">
+                                            <label class="control-label">是</label>
+
+                                            <input type="radio" id="iCheckFalse" name="iCheck" class="iCheck-flat-orange" th:value="false" checked>
+                                            <label class="control-label">否</label>
+
+                                    </div>
+                                </div>-->
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-success" type="submit" id="saveBtn">保存</button>
+                            <button data-dismiss="modal" class="btn btn-default" type="button" id="cancelBtn">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal -->
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        <div th:replace="base/common :: commonFooter"></div>
+        <!--footer section end-->
+    </div>
+    <!-- body content end-->
+</section>
+
+<script th:inline="javascript">
+
+    $("#saveBtn").click(function () {
+        if ($("#username").val()==null || $("#username").val()==""){
+            alert("用户名不能为空")
+            return;
+        }
+        if ($("#nick").val()==null || $("#nick").val()==""){
+            alert("昵称不能为空")
+            return;
+        }
+        if ($("#password").val()==null || $("#password").val()==""){
+            alert("密码不能为空")
+            return;
+        }
+
+        //获取选中角色
+        var roleList = $("#multiple").val();
+        if (null==roleList || roleList.length==0){
+            alert("请选择角色")
+            return;
+        }
+
+        // var ifFactory = $('input[name="iCheck"]:checked').val();
+
+        $.ajax({
+            type: 'POST',
+            dataType: "json",
+            url: "/sysuser/edit",
+            data: {
+                "userId": $("#userId").val(),
+                "username": $("#username").val(),
+                "nickName": $("#nick").val(),
+                "password": $("#password").val(),
+                "roleIdString":JSON.stringify(roleList)
+            },
+            success: function (res) {
+                if (res.code==0){
+                    alert(res.msg);
+                } else{
+                    $("#cancelBtn").click();
+                    window.location.reload();
+                }
+            }, error: function (res) {
+                console.log("error" + res.toString());
+            }
+        })
+    })
+
+    function toAdd() {
+        $("#userId").val("");
+        $("#username").val("");
+        $("#nick").val("");
+        $("#password").val("");
+    }
+
+    function toEdit(id) {
+        console.log(id);
+        $("#userId").val(id);
+        $.ajax({
+            type:'POST',
+            dataType:"json",
+            url:"/sysuser/toEdit",
+            data:{
+                id:id
+            },
+            success:function (res) {
+                $("#userId").val(res.bean.userId);
+                $("#username").val(res.bean.username);
+                $("#nick").val(res.bean.nickName);
+                $("#password").val(res.bean.password);
+                /*if (res.bean.ifFactory==true){
+                    $("#iCheckTrue").iCheck("check");
+                }
+                if (res.bean.ifFactory==false){
+                    $("#iCheckFalse").iCheck("check");
+                }*/
+                var roleList = res.bean.roleList;
+                var array = new Array;
+                for (var i=0;i<roleList.length;i++){
+                    array.push(roleList[i].id);
+                }
+                $("#multiple").select2();
+                $("#multiple").val(array).trigger("change")
+            },
+            error:function (res) {
+                console.log(res.toString());
+            }
+        })
+    }
+
+    function del(id) {
+
+        if(confirm("确实要删除吗？BOM可能在用！")){
+            $.ajax({
+                type:'POST',
+                dataType:"json",
+                url:"/sysuser/deleteById",
+                data:{
+                    id:id
+                },
+                success:function (res) {
+                    alert(res.msg)
+                    window.location.reload();
+                },
+                error:function (res) {
+                    console.log(res.toString());
+                }
+            })
+        }
+
+
+    }
+
+</script>
+
+</body>
+</html>
