@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * Created by wmm on 2019/4/12.
  */
-@JsonIgnoreProperties({"hibernateLazyInitializer", "permissions","hibernateLazyInitializer", "userInfos"})
 @Entity
 @Table(name = "sys_role")
 public class SysRole {
